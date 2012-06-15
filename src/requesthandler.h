@@ -7,7 +7,8 @@ class Request;
 class RequestHandler
 {
 	public:
-	virtual void HandleRequest(Request& request){};
+	virtual void RequiresUpdate(){ return false; }
+	virtual void HandleRequest(Request& request){}
 };
 
 #endif
