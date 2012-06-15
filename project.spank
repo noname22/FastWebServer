@@ -1,0 +1,5 @@
+name      fws
+template  c++
+cflags    Wall std=c++0x
+sourcedir src
+lib       flog
