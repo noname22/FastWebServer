@@ -23,9 +23,9 @@ int main()
 
 	Server server;
 
-	server.AddRequestHandler("/", new StaticResource("data/index.html", "text/html"));
-	server.AddRequestHandler("/heart.png", new StaticResource("data/heart.png", "image/png"));
-	server.AddRequestHandler("/favicon.ico", new StaticResource("data/favicon.ico", "image/x-icon"));
+	server.AddRequestHandler("/", new StaticResource("data/index.html"));
+	server.AddRequestHandler("/heart.png", new StaticResource("data/heart.png"));
+	server.AddRequestHandler("/favicon.ico", new StaticResource("data/favicon.ico"));
 	server.AddRequestHandler("/dynamic", new DynamicTest());
 
 	server.ListenForever();

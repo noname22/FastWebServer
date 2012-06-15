@@ -1,5 +1,6 @@
 name      fws
 template  c++
-cflags    Wall std=c++0x
+cflags    Wall std=c++0x ggdb
 sourcedir src
 lib       flog
+ldflags   lmagic

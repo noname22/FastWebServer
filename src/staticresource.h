@@ -8,6 +8,7 @@ class StaticResource: public RequestHandler
 	private:
 	std::string data;
 	std::string contentType;
+	bool detectMime;
 
 	std::string path;
 	time_t modified;
@@ -15,7 +16,7 @@ class StaticResource: public RequestHandler
 	void Load();
 
 	public:
-	StaticResource(std::string path, std::string contentType);
+	StaticResource(std::string path, std::string contentType = "");
 	void HandleRequest(Request& request);
 };
 

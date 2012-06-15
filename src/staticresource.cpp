@@ -1,6 +1,3 @@
-#include "staticresource.h"
-#include "request.h"
-
 #include <flog.h>
 
 #include <unistd.h>
@@ -8,6 +5,10 @@
 #include <sys/stat.h>
 
 #include <fstream>
+
+#include "staticresource.h"
+#include "request.h"
+#include "mime.h"
 
 void StaticResource::Load()
 {
@@ -23,7 +24,9 @@ void StaticResource::Load()
 		return;
 	}
 
-	FlogV("(re)loading file: " << path);
+	if(detectMime) contentType = Mime::GetType(path);
+
+	FlogV("(re)loading file: " << path << " | " << contentType);
 
 	modified = fileInfo.st_mtime;
 
@@ -49,6 +52,8 @@ void StaticResource::Load()
 StaticResource::StaticResource(std::string path, std::string contentType)
 {
 	this->contentType = contentType;
+	detectMime = (contentType == "");
+
 	this->path = path;
 	modified = 0;
 
