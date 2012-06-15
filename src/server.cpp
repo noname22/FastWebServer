@@ -14,7 +14,7 @@
 class Handle404 : public RequestHandler {
 	void HandleRequest(Request& request){
 		std::string str = Str("404, File Not Found: " << request.GetPath());
-		request.WriteResponse("404", "text/html", str);
+		request.WriteResponse("404 Not Found", "text/html", str);
 	}
 };
 	
