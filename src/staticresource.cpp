@@ -3,11 +3,31 @@
 
 #include <flog.h>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <fstream>
 
-StaticResource::StaticResource(std::string path, std::string contentType)
+void StaticResource::Load()
 {
-	this->contentType = contentType;
+	struct stat fileInfo;
+	stat(path.c_str(), &fileInfo);
+
+	if(access(path.c_str(), F_OK) == -1){
+		FlogW("could not stat file: " << path);
+		return;
+	}
+
+	if(modified == fileInfo.st_mtime){
+		return;
+	}
+
+	FlogV("(re)loading file: " << path);
+
+	modified = fileInfo.st_mtime;
+
+	data.clear();
 
 	std::ifstream f(path);
 
@@ -26,7 +46,17 @@ StaticResource::StaticResource(std::string path, std::string contentType)
 	f.close();
 }
 
+StaticResource::StaticResource(std::string path, std::string contentType)
+{
+	this->contentType = contentType;
+	this->path = path;
+	modified = 0;
+
+	Load();
+}
+
 void StaticResource::HandleRequest(Request& request)
 {
+	Load();
 	request.WriteResponse("200 OK", contentType, data);
 }

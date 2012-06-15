@@ -9,6 +9,11 @@ class StaticResource: public RequestHandler
 	std::string data;
 	std::string contentType;
 
+	std::string path;
+	time_t modified;
+
+	void Load();
+
 	public:
 	StaticResource(std::string path, std::string contentType);
 	void HandleRequest(Request& request);
