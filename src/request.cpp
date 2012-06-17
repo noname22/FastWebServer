@@ -37,8 +37,8 @@ void Request::ParseRequest()
 		throw std::runtime_error(Str("Unknown request '" << str << "'"));
 	}
 }
-
-void Request::WriteResponse(std::string responseCode, std::string contentType, const std::string& body)
+	
+std::string GetHeader(const std::string& reponseCode, const std::string& contentType, const std::string& body)
 {
 	std::stringstream header;
 	
@@ -48,6 +48,17 @@ void Request::WriteResponse(std::string responseCode, std::string contentType, c
 	header << "Content-Length: " << body.size() << "\r\n";
 	header << "\r\n";
 
-	write(socket, header.str().c_str(), header.str().size());
+	return header.str();
+}
+
+void Request::WriteRawToSocket(std::string& body)
+{
+	write(socket, body.c_str(), body.size());
+}
+
+void Request::WriteResponse(std::string responseCode, std::string contentType, const std::string& body)
+{
+	std::string header = GetHeader(responseCode, contentType, body);
+	write(socket, header.c_str(), header.size());
 	write(socket, body.c_str(), body.size());
 }
