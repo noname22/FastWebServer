@@ -5,48 +5,22 @@
 #include <sys/stat.h>
 
 #include <fstream>
+#include <stdexcept>
 
 #include "staticresource.h"
 #include "request.h"
 #include "mime.h"
+#include "tools.h"
 
-void StaticResource::Load()
+bool StaticResource::RequiresUpdate(Request& request)
 {
-	struct stat fileInfo;
-	stat(path.c_str(), &fileInfo);
-
-	if(access(path.c_str(), F_OK) == -1){
-		FlogW("could not stat file: " << path);
-		return;
+	try {
+		return (modified != GetModified());
+	} catch(const std::runtime_error e){
+		FlogW(e.what());
 	}
 
-	if(modified == fileInfo.st_mtime){
-		return;
-	}
-
-	if(detectMime) contentType = Mime::GetType(path);
-
-	FlogV("(re)loading file: " << path << " | " << contentType);
-
-	modified = fileInfo.st_mtime;
-
-	data.clear();
-
-	std::ifstream f(path);
-
-	if(!f.good()){
-		FlogW("could not read file: " << path);
-		return;
-	}
-
-	f.seekg(0, std::ios_base::end);
-	size_t size = f.tellg();
-	f.seekg(0);
-
-	data.resize(size);
-	f.read(&data[0], size);
-
-	f.close();
+	return false;
 }
 
 StaticResource::StaticResource(std::string path, std::string contentType)
@@ -56,12 +30,54 @@ StaticResource::StaticResource(std::string path, std::string contentType)
 
 	this->path = path;
 	modified = 0;
+}
 
-	Load();
+time_t StaticResource::GetModified()
+{
+	struct stat fileInfo;
+	if(stat(path.c_str(), &fileInfo) != 0)
+		throw std::runtime_error(Str("could not stat file: " << path));
+
+	return fileInfo.st_mtime;
 }
 
 void StaticResource::HandleRequest(Request& request)
 {
-	Load();
-	request.WriteResponse("200 OK", contentType, data);
+	try {
+		modified = GetModified();
+	} catch (const std::runtime_error e) {
+		FlogW(e.what());
+		return;
+	} 
+
+	if(detectMime) contentType = Mime::GetType(path);
+
+	FlogV("(re)loading file: " << path << " | " << contentType);
+
+	std::ifstream f(path);
+
+	if(!f.good()){
+		FlogW("could not read file: " << path);
+		return;
+	}
+
+	const size_t blockSize = 4096;
+
+	f.seekg(0, std::ios_base::end);
+	size_t size = f.tellg();
+	f.seekg(0);
+
+	std::string responseCode = "200 OK";
+	request.WriteRaw(request.GetHeader(responseCode, contentType, size));
+
+	std::streampos pos = 0;
+	std::string data;
+
+	while((pos = f.tellg()) >= 0 && (size_t)pos < size - 1){ 
+		data.resize(size - (size_t)pos < blockSize ? size - (size_t)pos : blockSize);
+		f.read(&data[0], data.size());
+		request.WriteRaw(data);
+	}
+
+	f.close();
 }

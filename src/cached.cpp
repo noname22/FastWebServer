@@ -1,15 +1,20 @@
 #include "cached.h"
+#include "request.h"
 
-class CachingRequest: Request {
+#include <flog.h>
+
+class CachingRequest: public Request {
 	public:
 	std::string* str;
-	
-	CachingRequest(){ closeSocket = false; }
+
+	CachingRequest(HttpMethod method, const std::string& path, const std::string& query) : Request(method, path, query){}
 	
 	void WriteResponse(std::string responseCode, std::string contentType, const std::string& body) {
-		*str = GetHeader(responseCode, contentType, body);
+		*str = GetHeader(responseCode, contentType, body.size());
 		*str += body;
 	}
+
+	void WriteRaw(const std::string& body){ *str += body; }
 };
 
 
@@ -21,15 +26,15 @@ Cached::Cached(RequestHandler* rh)
 
 void Cached::HandleRequest(Request& request)
 {
-	if(firstRun || rh->NeedsUpdate()){
+	if(firstRun || rh->RequiresUpdate(request)){
 		firstRun = false;
 		data.clear();
 
-		CachingRequest cr = request;
+		CachingRequest cr(request.GetMethod(), request.GetPath(), request.GetQuery());
 		cr.str = &data;
 
-		rh->handleRequest(cr);
+		rh->HandleRequest(cr);
 	}
 
-	request.WriteRawToSocket(data);
+	request.WriteRaw(data);
 }

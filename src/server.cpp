@@ -9,6 +9,7 @@
 
 #include "server.h"
 #include "request.h"
+#include "socketrequest.h"
 #include "tools.h"
 
 class Handle404 : public RequestHandler {
@@ -33,7 +34,7 @@ void Server::AddRequestHandler(std::string route, RequestHandler* rh)
 
 void Server::DispatchRequest(int socket)
 {
-	Request request(socket);
+	SocketRequest request(socket);
 
 	try {
 		request.ParseRequest();

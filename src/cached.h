@@ -10,7 +10,6 @@ class Cached: public RequestHandler
 	private:
 	std::string data;
 	std::string contentType;
-	std::string data;
 	
 	time_t lastUpdated;
 	bool firstRun;

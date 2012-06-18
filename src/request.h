@@ -6,28 +6,25 @@
 class Request {
 	friend class Server;
 
-	private:
+	protected:
 	enum HttpMethod { HM_Get, HM_Post } method;
 	std::string path;
 	std::string query;
 
-	int socket;
-
-	void ParseRequest();
-
-	protected:
-	std::string GetHeader(const std::string& reponseCode, const std::string& contentType, const std::string& body);
-	bool closeSocket;
-
 	public:
 	const std::string& GetPath() const { return path; }
 	const std::string& GetQuery() const { return query; }
+	const HttpMethod GetMethod(){ return method; }
+	
+	std::string GetHeader(const std::string& reponseCode, const std::string& contentType, size_t bodySize);
 
-	virtual Request(int socket) : socket(socket) { closeSocket = true; }
-	virtual ~Request(){ if(closeSocket) close(socket); }
+	Request(){ method = HM_Get; }
+	Request(HttpMethod method, const std::string& path, const std::string& query);
 
-	virtual void WriteResponse(std::string responseCode, std::string contentType, const std::string& body);
-	void WriteRawToSocket(std::string& body);
+	virtual ~Request(){}
+
+	virtual void WriteResponse(std::string responseCode, std::string contentType, const std::string& body) = 0;
+	virtual void WriteRaw(const std::string& body) = 0;
 };
 
 #endif
