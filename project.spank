@@ -1,6 +1,6 @@
-name      fws
-template  c++
-cflags    Wall std=c++0x ggdb
-sourcedir src
-lib       flog
-ldflags   lmagic
+name       fws
+template   c++
+targettype lib-static
+cflags     Wall std=c++0x ggdb Iinclude
+sourcedir  src
+lib        flog

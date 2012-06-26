@@ -1,5 +1,6 @@
 #include <flog.h>
 #include <sys/time.h>
+#include <signal.h>
 
 #include "server.h"
 #include "staticresource.h"
@@ -43,6 +44,11 @@ class ServerTime : public DynamicResource
 	}
 };
 
+void HandleSigHup(int signal)
+{
+	FlogD("HUP!");
+}
+
 int main()
 {
 	Flog_Init(SPANK_NAME);
@@ -66,6 +72,8 @@ int main()
 
 	// Cached dynamic page
 	server.AddRequestHandler("/time", new Cached(new ServerTime()));
+	
+	FlogAssert( signal(SIGHUP, HandleSigHup) != SIG_ERR, "Could not set signal handler");
 
 	server.ListenForever();
 

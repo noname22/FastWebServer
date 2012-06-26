@@ -1,1 +1,2 @@
-fws
+tests/testsite/fwstest
+libfws.a

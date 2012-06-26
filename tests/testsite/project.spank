@@ -1,0 +1,6 @@
+name      fwstest
+template  c++
+cflags    I../../include std=c++0x
+ldflags   L../.. lfws lmagic
+lib       flog
+sourcedir src
