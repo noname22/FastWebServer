@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "httpheader.h"
+
 class Request {
 	friend class Server;
 
@@ -23,7 +25,7 @@ class Request {
 
 	virtual ~Request(){}
 
-	virtual void WriteResponse(std::string responseCode, std::string contentType, const std::string& body) = 0;
+	virtual void WriteResponse(const HttpHeader& header, const std::string& body) = 0;
 	virtual void WriteRaw(const std::string& body) = 0;
 };
 

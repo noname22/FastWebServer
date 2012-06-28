@@ -10,15 +10,11 @@ class DynamicResource: public RequestHandler
 {
 	private:
 	void HandleRequest(Request& request);
-	std::string contentType;
-	std::string responseCode;
 
 	protected:
-	void SetContentType(const std::string& contentType);
-	void SetResponseCode(const std::string& responseCode);
+	HttpHeader header;
 
 	public:
-	DynamicResource();
 	virtual void Generate(std::stringstream& stream, const Request& request) = 0;
 };
 

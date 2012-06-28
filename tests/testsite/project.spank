@@ -1,6 +1,6 @@
-name      fwstest
-template  c++
-cflags    I../../include std=c++0x
-ldflags   L../.. lfws lmagic
-lib       flog
-sourcedir src
+name       fwstest
+template   c++
+cflags     Wall std=c++0x ggdb I../../include
+sourcedir  src ../../src
+ldflags    lmagic
+lib        flog

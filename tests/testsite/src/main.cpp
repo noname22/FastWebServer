@@ -6,6 +6,7 @@
 #include "staticresource.h"
 #include "dynamicresource.h"
 #include "cached.h"
+#include "httpheader.h"
 
 class DynamicTest : public DynamicResource
 {

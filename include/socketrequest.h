@@ -13,7 +13,7 @@ class SocketRequest : public Request {
 	SocketRequest(int socket) : socket(socket) {}
 	~SocketRequest(){ close(socket); }
 
-	void WriteResponse(std::string responseCode, std::string contentType, const std::string& body);
+	void WriteResponse(const HttpHeader& header, const std::string& body);
 	void WriteRaw(const std::string& body);
 };
 

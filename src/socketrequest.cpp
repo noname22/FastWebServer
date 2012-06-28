@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <sstream>
 
-
 void SocketRequest::ParseRequest()
 {
 	char buffer[8192];
@@ -42,10 +41,10 @@ void SocketRequest::WriteRaw(const std::string& body)
 	write(socket, body.c_str(), body.size());
 }
 
-void SocketRequest::WriteResponse(std::string responseCode, std::string contentType, const std::string& body)
+void SocketRequest::WriteResponse(const HttpHeader& header, const std::string& body)
 {
-	std::string header = GetHeader(responseCode, contentType, body.size());
-	write(socket, header.c_str(), header.size());
+	std::string headerString = header.ToString(body.size());
+	write(socket, headerString.c_str(), headerString.size());
 	write(socket, body.c_str(), body.size());
 }
 

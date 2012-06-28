@@ -9,8 +9,8 @@ class CachingRequest: public Request {
 
 	CachingRequest(HttpMethod method, const std::string& path, const std::string& query) : Request(method, path, query){}
 	
-	void WriteResponse(std::string responseCode, std::string contentType, const std::string& body) {
-		*str = GetHeader(responseCode, contentType, body.size());
+	void WriteResponse(const HttpHeader& header, const std::string& body) {
+		*str = header.ToString(body.size());
 		*str += body;
 	}
 
