@@ -24,6 +24,8 @@ std::string HttpHeader::ToString(size_t bodyLength) const
 	for(auto h : headers)
 		header << h.first << ": " << h.second << "\r\n";
 
+	header << "\r\n";
+
 	return header.str();
 }
 

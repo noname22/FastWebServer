@@ -12,7 +12,7 @@ class DynamicTest : public DynamicResource
 {
 	public:
 	void Generate(std::stringstream& data, const Request& request){
-		data << "query: " << request.GetQuery();
+		data << "query " << request.GetQuery();
 	}
 };
 
@@ -59,7 +59,7 @@ int main()
 
 	FlogI("Welcome to " << SPANK_NAME << " " << SPANK_VERSION);
 
-	Server server;
+	Server server("0.0.0.0");
 
 	// Memory cached static data
 	server.AddRequestHandler("/", new Cached(new StaticResource("data/index.html")));
